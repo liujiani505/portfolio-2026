@@ -1,0 +1,129 @@
+import type { CaseStudy } from "../types";
+
+/**
+ * CASE STUDY 02 — Boston University Giving Companion
+ * Jiani's freelance project. Not an official Boston University product.
+ * No donor testing has been completed yet.
+ *
+ * The page itself is a custom editorial layout (components/case-study/giving-companion.tsx).
+ * The chapters below are a plain-text summary used by the ⌘K assistant and SEO only.
+ */
+export const buGiving: CaseStudy = {
+  slug: "bu-giving-companion",
+  index: "02",
+  kind: "AI product concept",
+  layout: "journey",
+  title: "Boston University",
+  subtitle: "Designing an AI giving companion for donors",
+  proves:
+    "Framing an ambiguous consumer opportunity, designing AI around trust, and being precise about what is still unvalidated.",
+  thesis:
+    "A freelance project exploring how AI could connect an existing but fragmented university giving ecosystem into a more personal donor journey.",
+  company: "Boston University",
+  role: "Product Strategy, UX Research, AI Interaction Design, Prototyping",
+  timeframe: "[NEED INPUT: timeframe]",
+  team: "[NEED INPUT: client / collaborators, if any]",
+  disciplines: ["Consumer product", "AI interaction design", "Trust design", "Concept prototype"],
+  stack: [],
+  card: {
+    subtitleLines: ["Designing an AI giving", "companion for donors."],
+    facts: [
+      { k: "Type", v: "Freelance project" },
+      { k: "Role", v: "Product strategy, UX research, AI interaction design, prototyping" },
+      { k: "Status", v: "Interactive concept prototype" },
+    ],
+    tags: ["Consumer product", "AI interaction design", "Trust design", "Concept prototype"],
+    image: {
+      src: "/work/bu/landing.jpg",
+      aspect: "1440 / 1000",
+      alt: "Boston University Giving Companion landing page: 'Your giving journey starts with what matters to you' beside a photo of students.",
+    },
+  },
+  headlineMetrics: [],
+  summary:
+    "Boston University Giving Companion is a freelance project: a concept for a donor-facing AI assistant inside Boston University's existing Alumni & Friends giving experience. It helps annual donors discover funds that match what they care about, compare them, give through BU's existing secure checkout, and later follow verified updates about programs they supported. It is an interactive concept prototype; donor usability validation is planned, not done.",
+  keywords: [
+    "bu",
+    "boston university",
+    "giving",
+    "donor",
+    "fundraising",
+    "advancement",
+    "ai",
+    "assistant",
+    "trust",
+    "consumer",
+    "recommendation",
+    "concept",
+    "validation",
+  ],
+  chapters: [
+    {
+      id: "opportunity",
+      label: "The opportunity",
+      blocks: [
+        {
+          type: "prose",
+          body: [
+            "Exploratory conversations in the advancement sector, and feedback relayed from alumni and donors, suggested that finding relevant giving opportunities can be hard, giving navigation can feel fragmented, and donors may struggle to see how the programs they supported are progressing. Annual donors don't typically get the individual attention major and principal donors get. These are observations, not completed donor research.",
+            "Design question: how might we help annual donors discover giving opportunities that reflect their interests and stay connected to their impact, without requiring high-touch support from advancement staff?",
+          ],
+        },
+      ],
+    },
+    {
+      id: "strategy",
+      label: "Product strategy",
+      blocks: [
+        {
+          type: "prose",
+          body: [
+            "Connect the ecosystem, don't replace it. Three approaches were compared: improved navigation and directory, a structured interest-based fund finder, and an AI-assisted giving companion. The companion was explored because it can take a donor's own words and connect verified fund information, published impact content and the existing donation system. Whether AI adds enough over a structured finder is still to be validated.",
+          ],
+        },
+      ],
+    },
+    {
+      id: "experience",
+      label: "Designing the experience",
+      blocks: [
+        {
+          type: "prose",
+          body: [
+            "The journey runs Discover, Explore, Compare, Give, Stay connected. Donors describe what they care about, get recommended funds with explanations and sources, compare two funds side by side, continue to BU's existing secure checkout, and later, with permission, see verified updates about the programs they supported.",
+          ],
+        },
+      ],
+    },
+    {
+      id: "trust",
+      label: "Trust by design",
+      blocks: [
+        {
+          type: "prose",
+          body: [
+            "Recommendations explain why they match. Answers link to the BU pages they came from. Giving history is used only with explicit permission. The Companion says what it couldn't find, never estimates per-gift outcomes BU hasn't published, offers a person at every step, and hands payment to BU's existing secure system.",
+          ],
+        },
+      ],
+    },
+    {
+      id: "validation",
+      label: "Validation and next steps",
+      blocks: [
+        {
+          type: "prose",
+          body: [
+            "This is a concept prototype, not a shipped product. Proposed donor tasks: find a fund supporting first-generation students, compare two funds, verify a recommendation's source, find updates about a previously supported program. Proposed measures: discovery success, accuracy of fund understanding, effort to compare, recognition of verified evidence, trust and usefulness, and ability to find post-gift updates.",
+          ],
+        },
+      ],
+    },
+  ],
+  lessons: [
+    {
+      title: "Connect, don't add",
+      body: "The opportunity wasn't to create more fundraising content. It was to explore how existing experiences could become more connected and meaningful.",
+    },
+  ],
+};

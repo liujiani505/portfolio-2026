@@ -1,0 +1,829 @@
+"use client";
+
+/**
+ * Boston University Giving Companion — a custom editorial layout.
+ *
+ * Same type, colour, header and section-label system as the Subaru case study;
+ * the story differs through layout — browser-framed screens, a journey rail,
+ * close-up trust details. BU red appears only inside the concept screens.
+ *
+ * A freelance project, shown as a concept. Nothing claims donor testing,
+ * BU endorsement, or results.
+ */
+
+import Link from "next/link";
+import { Reveal } from "@/components/ui/primitives";
+import { cn } from "@/lib/utils";
+import type { CaseStudy, Chapter } from "@/content/types";
+import { ChapterNav } from "@/components/case-study/chapter-nav";
+import { AskCta } from "@/components/case-study/ask-cta";
+
+const CHAPTERS: Chapter[] = [
+  { id: "opportunity", label: "The opportunity", blocks: [] },
+  { id: "existing", label: "Existing experience", blocks: [] },
+  { id: "strategy", label: "Product strategy", blocks: [] },
+  { id: "experience", label: "Designing the experience", blocks: [] },
+  { id: "trust", label: "Trust by design", blocks: [] },
+  { id: "validation", label: "Validation & next steps", blocks: [] },
+];
+
+const IMG = "/work/bu";
+
+/* ------------------------------------------------------------------ */
+/* Small building blocks                                               */
+/* ------------------------------------------------------------------ */
+
+/** A product screen in a quiet browser frame. */
+function Frame({
+  src,
+  alt,
+  className,
+  imgClassName,
+  priority,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  imgClassName?: string;
+  priority?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+ "overflow-hidden rounded-xl border border-ink/10 bg-white shadow-[0_30px_70px_-40px_rgb(40_30_20/0.45)]",
+        className,
+      )}
+    >
+      <div className="flex items-center gap-1.5 border-b border-black/10 bg-[#f3f1ee] px-3 py-2" aria-hidden>
+        <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
+        <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
+        <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
+      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={alt}
+        loading={priority ? "eager" : "lazy"}
+        className={cn("block h-auto w-full", imgClassName)}
+      />
+    </div>
+  );
+}
+
+/** A close-up detail cut from a screen. */
+function Detail({ src, alt, className }: { src: string; alt: string; className?: string }) {
+  return (
+    <div className={cn("overflow-hidden rounded-lg border border-ink/10 bg-white shadow-[0_14px_40px_-28px_rgb(40_30_20/0.5)]", className)}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt={alt} loading="lazy" className="block h-auto w-full" />
+    </div>
+  );
+}
+
+function Kicker({ n, children }: { n: string; children: React.ReactNode }) {
+  return (
+    <p className="eyebrow mb-8" data-n={n}>
+      {children}
+    </p>
+  );
+}
+
+function Serif({ children, className, id }: { children: React.ReactNode; className?: string; id?: string }) {
+  return (
+    <h2 id={id} className={cn("text-balance text-title font-semibold", className)}>
+      {children}
+    </h2>
+  );
+}
+
+function Label({ children, tone = "line" }: { children: React.ReactNode; tone?: "line" | "lime" | "ink" }) {
+  return (
+    <span
+      className={cn(
+ "inline-flex items-center rounded-full px-3 py-1 text-base font-medium",
+        (tone === "lime" || tone === "ink") && "border border-ink/70 text-ink",
+        tone === "line" && "border border-line text-muted",
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Page                                                                */
+/* ------------------------------------------------------------------ */
+
+export function GivingCompanionPage({ cs, next }: { cs: CaseStudy; next?: CaseStudy }) {
+  return (
+    <article>
+      {/* ======================================================= HERO
+          Same header structure as the Subaru page: back link, eyebrow, h1,
+          lede, a four-column fact strip, then the product visual.            */}
+      <header className="border-b border-line pb-12 pt-28 md:pb-16 md:pt-36">
+        <div className="shell">
+          <Reveal>
+            <Link href="/#work" className="group mb-12 inline-flex items-center gap-2 text-base text-faint transition-colors hover:text-ink">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden className="transition-transform duration-500 ease-out group-hover:-translate-x-1">
+                <path d="M12 7H2M6 3L2 7l4 4" stroke="currentColor" strokeWidth="1.25" />
+              </svg>
+              All work
+            </Link>
+          </Reveal>
+
+          <Reveal delay={0.04}>
+            <div className="mb-8 flex flex-wrap items-center gap-3">
+              <span className="font-sans font-medium text-eyebrow uppercase tracking-[0.06em] text-faint">{cs.index}</span>
+              <span className="font-sans font-medium text-eyebrow uppercase tracking-[0.06em] text-accent">
+                Boston University · Giving Companion · AI Product Concept
+              </span>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.08}>
+            <h1 className="max-w-[18ch] text-balance text-display font-semibold">
+              Connecting discovery, giving, and impact through AI.
+            </h1>
+          </Reveal>
+
+          <Reveal delay={0.12}>
+            <p className="mt-10 max-w-[58ch] text-pretty text-lede text-muted">
+              A freelance project exploring how AI could connect an existing but fragmented university giving
+              ecosystem into a more personal donor journey.
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.16}>
+            <dl className="mt-12 grid gap-x-8 gap-y-8 border-t border-line pt-8 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                { k: "Role", v: "Product Strategy, UX Research, AI Interaction Design, Prototyping" },
+                { k: "Type", v: "Freelance project" },
+                { k: "Organization studied", v: "Boston University Alumni & Friends" },
+                { k: "Status", v: "Interactive concept prototype · donor usability validation planned" },
+              ].map((f) => (
+                <div key={f.k}>
+                  <dt className="eyebrow mb-2.5">{f.k}</dt>
+                  <dd className="text-base leading-relaxed text-ink/90">{f.v}</dd>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
+
+          {/* Layered composition of three real screens */}
+          <Reveal delay={0.2}>
+            <div className="relative mt-12" role="img" aria-label="Three concept screens: recommendations, the landing page, and My Giving Journey">
+              <div className="grid gap-5 md:grid-cols-12">
+                <Frame src={`${IMG}/recommendations.jpg`} alt="" priority className="md:col-span-7" imgClassName="max-h-[560px] object-cover object-top" />
+                <div className="hidden gap-5 md:col-span-5 md:grid">
+                  <Frame src={`${IMG}/landing.jpg`} alt="" imgClassName="max-h-[260px] object-cover object-top" />
+                  <Frame src={`${IMG}/journey.jpg`} alt="" imgClassName="max-h-[260px] object-cover object-top" />
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </header>
+
+      {/* Same reading frame as the Subaru page: sticky contents rail + content column */}
+      <div className="shell py-14 md:py-20">
+        <div className="grid gap-x-12 md:grid-cols-12">
+          <aside className="hidden md:col-span-3 md:block">
+            <div className="sticky top-28 max-h-[calc(100vh-8rem)] space-y-8 overflow-y-auto pb-4 pr-2">
+              <ChapterNav chapters={CHAPTERS} />
+              <AskCta title={cs.title} />
+            </div>
+          </aside>
+          <div className="min-w-0 md:col-span-9">
+      {/* ============================================ 01 OPPORTUNITY */}
+      <section id="opportunity" aria-labelledby="opp-h" className="scroll-mt-28 border-t border-line py-10 first:border-t-0 first:pt-0 md:py-14">
+        <div>
+          <Reveal>
+            <Kicker n="01">The opportunity</Kicker>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <Serif id="opp-h" className="max-w-[22ch]">Major donors get a relationship. Annual donors mostly find their own way.</Serif>
+          </Reveal>
+
+          {/* The tension: personal cultivation vs. staff capacity */}
+          <Reveal delay={0.1}>
+            <figure className="mt-14">
+              <div className="grid gap-4 md:grid-cols-[1fr_auto_1fr] md:items-stretch">
+                <div className="rounded-2xl bg-surface p-7">
+                  <div className="eyebrow mb-3">High-touch</div>
+                  <p className="text-lede font-semibold tracking-tight">Major &amp; principal donors</p>
+                  <p className="mt-2 text-base leading-relaxed text-muted">Individual attention from advancement staff: guidance before a gift, a relationship after it.</p>
+                </div>
+                <div className="flex items-center justify-center px-2" aria-hidden>
+                  <span className="h-px w-16 bg-line md:h-24 md:w-px" />
+                </div>
+                <div className="rounded-2xl border border-dashed border-ink/25 p-7">
+                  <div className="eyebrow mb-3">Self-serve</div>
+                  <p className="text-lede font-semibold tracking-tight">Annual donors</p>
+                  <p className="mt-2 text-base leading-relaxed text-muted">Find a fund alone, give through a form, and rarely hear how that program is doing.</p>
+                </div>
+              </div>
+              <figcaption className="mt-5 max-w-prose text-base leading-relaxed text-faint">
+                Staff capacity is the constraint: individual cultivation doesn&apos;t scale to every annual donor.
+              </figcaption>
+            </figure>
+          </Reveal>
+
+          <div className="mt-16 grid gap-10 md:grid-cols-12">
+            <Reveal className="md:col-span-5">
+              <p className="text-base leading-relaxed text-muted">
+                Exploratory conversations in the advancement sector, and feedback relayed from alumni and
+                donors, pointed to the same few concerns. Advancement leadership has also expressed interest
+                in exploring AI for annual giving and longer-term donor relationships.
+              </p>
+            </Reveal>
+            <Reveal delay={0.05} className="md:col-span-6 md:col-start-7">
+              <ul className="divide-y divide-line border-y border-line">
+                {[
+ "Finding relevant giving opportunities can be difficult.",
+ "Giving navigation can feel fragmented or confusing.",
+ "Donors may struggle to see how the programs they supported are progressing.",
+ "Annual donors rarely get the individual attention major donors do.",
+                ].map((t) => (
+                  <li key={t} className="py-4 text-lg leading-snug">{t}</li>
+                ))}
+              </ul>
+              <p className="mt-4 text-base text-faint">These shaped the opportunity. They are not completed donor research.</p>
+            </Reveal>
+          </div>
+
+          <Reveal>
+            <div className="mt-20 max-w-3xl border-t border-ink/70 pt-6">
+              <p className="eyebrow mb-3">How might we</p>
+              <p className="max-w-[40ch] text-balance text-2xl font-semibold leading-snug tracking-tight">
+                help annual donors discover giving opportunities that reflect their interests, and stay
+                meaningfully connected to their impact, without requiring high-touch support from staff?
+              </p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ================================== 02 THE FRAGMENTED JOURNEY */}
+      <section id="existing" aria-labelledby="existing-h" className="scroll-mt-28 border-t border-line py-10 first:border-t-0 first:pt-0 md:py-14">
+        <div>
+          <Reveal>
+            <Kicker n="02">Understanding the existing experience</Kicker>
+            <h2 id="existing-h" className="max-w-[24ch] text-balance text-title font-semibold">
+              The pieces exist. The journey between them doesn&apos;t.
+            </h2>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <p className="mt-6 max-w-prose text-pretty text-lg leading-relaxed text-muted">
+              Boston University (BU) already has a Where to Give directory, school-specific fund pages, donation forms and
+              published impact stories. Each works on its own. The gaps are in between.
+            </p>
+          </Reveal>
+
+          <FragmentedJourney />
+
+          {/* What is known vs. assumed */}
+          <div className="mt-20 grid gap-6 md:grid-cols-3">
+            {[
+              {
+                tag: "Stakeholder observations",
+                tone: "ink" as const,
+                items: [
+ "Relevant opportunities are hard to find.",
+ "Navigation feels fragmented.",
+ "Leadership interest in AI for annual giving.",
+                ],
+              },
+              {
+                tag: "Public website analysis",
+                tone: "line" as const,
+                items: [
+ "Discovery, fund detail, donation and impact live in separate places.",
+ "Impact stories aren't connected back to the funds a donor gave to.",
+ "[NEED INPUT: anything else you found reviewing BU's giving pages]",
+                ],
+              },
+              {
+                tag: "Assumptions to validate",
+                tone: "lime" as const,
+                items: [
+ "Donors would describe a cause in their own words.",
+ "Explanations and sources would increase confidence.",
+ "Returning donors want program updates, with permission.",
+                ],
+              },
+            ].map((c, i) => (
+              <Reveal key={c.tag} delay={i * 0.05}>
+                <div className="h-full rounded-2xl border border-line bg-canvas p-6">
+                  <Label tone={c.tone}>{c.tag}</Label>
+                  <ul className="mt-5 space-y-3">
+                    {c.items.map((t) => (
+                      <li key={t} className={cn("text-base leading-relaxed", t.startsWith("[") ? "font-medium text-accent" : "text-ink/90")}>
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================== 03 PRODUCT STRATEGY */}
+      <section id="strategy" aria-labelledby="strategy-h" className="scroll-mt-28 border-t border-line py-10 first:border-t-0 first:pt-0 md:py-14">
+        <div>
+          <Reveal>
+            <Kicker n="03">Product strategy</Kicker>
+            <Serif id="strategy-h" className="max-w-[18ch]">Connect the ecosystem. Don&apos;t replace it.</Serif>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <p className="mt-8 max-w-prose text-pretty text-lg leading-relaxed text-muted">
+              Another donation platform would compete with what BU already runs. A guidance layer can sit on
+              top: it reads verified content, listens to the donor, and hands off to the systems that already work.
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.1}>
+            <div className="mt-14 overflow-x-auto" tabIndex={0} role="region" aria-label="Three approaches compared">
+              <table className="w-full min-w-[720px] border-collapse text-left">
+                <thead>
+                  <tr>
+                    <th scope="col" className="w-[18%] pb-4"><span className="sr-only">Criteria</span></th>
+                    {["Improved navigation & directory", "Structured interest-based fund finder", "AI-assisted giving companion"].map((h, i) => (
+                      <th key={h} scope="col" className={cn("px-4 pb-4 align-bottom text-lg font-semibold leading-snug", i === 2 && "rounded-t-xl bg-surface pt-4 shadow-[inset_0_2px_0_rgb(var(--ink)/0.7)]")}>
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ["What it is", "Clearer categories, labels and search on existing pages.", "A guided set of questions that filters funds by cause, school and audience.", "Donors describe what matters in their own words; answers are grounded in BU's published content."],
+                    ["Strength", "Lowest risk and cost. Helps every visitor.", "Predictable, explainable, easy to govern.", "Handles open-ended interests and follow-up questions, and can connect giving to later updates."],
+                    ["Limit", "Still asks donors to know where to look. Nothing after the gift.", "Only as good as its categories. Rigid for personal or nuanced motivations.", "Needs strong guardrails, source grounding and governance. Highest risk if wrong."],
+                    ["Open question", "Is findability the real problem?", "Would a finder be enough?", "Does AI add value beyond a good finder? Not yet validated."],
+                  ].map((row) => (
+                    <tr key={row[0]} className="border-t border-line align-top">
+                      <th scope="row" className="py-5 pr-4 text-base font-semibold text-muted">{row[0]}</th>
+                      {row.slice(1).map((c, i) => (
+                        <td key={i} className={cn("px-4 py-5 text-base leading-relaxed", i === 2 ? "bg-surface text-ink" : "text-ink/90")}>
+                          {c}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Reveal>
+          <Reveal>
+            <p className="mt-5 max-w-prose text-base text-faint">
+              I explored the companion because it is the only option that spans before and after the gift.
+              The simpler options stay on the table until donors have tried all three.
+            </p>
+          </Reveal>
+
+          <EcosystemDiagram />
+        </div>
+      </section>
+
+      {/* =================================== 04 DESIGNING THE EXPERIENCE */}
+      <section id="experience" aria-labelledby="exp-h" className="scroll-mt-28 border-t border-line py-10 first:border-t-0 first:pt-0 md:py-14">
+        <div>
+          <Reveal>
+            <Kicker n="04">Designing the experience</Kicker>
+            <h2 id="exp-h" className="max-w-[20ch] text-balance text-title font-semibold">One journey, from a sentence to a relationship.</h2>
+          </Reveal>
+        </div>
+
+        {/* 1 · Discover */}
+        <div id="discover" className="scroll-mt-28 py-12 md:py-16">
+          <div className="grid gap-10">
+            <Reveal>
+              <Step n="1" title="Discover through conversation">
+                Start with what the donor cares about, not with BU&apos;s org chart. A plain question, a few
+                example prompts, and browse-by-cause for anyone who&apos;d rather click than type.
+              </Step>
+              <ul className="mt-8 space-y-3 text-base leading-relaxed text-muted">
+                <li><strong className="text-ink">Familiar placement.</strong> Lives inside the existing Giving navigation.</li>
+                <li><strong className="text-ink">Scope stated upfront.</strong> Answers draw only from BU&apos;s published giving pages and impact stories.</li>
+              </ul>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <div className="relative">
+                <Frame src={`${IMG}/landing.jpg`} alt="Giving Companion landing: 'Your giving journey starts with what matters to you', a text box asking what the gift should support, example prompts, and cause cards." imgClassName="max-h-[560px] object-cover object-top" />
+                <Detail
+                  src={`${IMG}/landing-input.jpg`}
+                  alt="Close-up of the question 'What would you like your gift to support?' with example prompts and a note that answers draw only from BU's published pages."
+                  className="absolute -bottom-10 -right-2 hidden w-[52%] md:block"
+                />
+              </div>
+            </Reveal>
+          </div>
+        </div>
+
+        {/* 2 · Explore — recommendations */}
+        <div id="explore" className="scroll-mt-28 border-t border-line py-12 md:py-16">
+          <div>
+            <Reveal>
+              <div>
+                <div>
+                  <Step n="2" title="Explore recommendations you can question">
+                    A donor writes, &ldquo;I&apos;m passionate about helping first-generation college students
+                    succeed.&rdquo; The Companion answers in plain language, then shows three funds, each with
+                    why it matches and where that came from.
+                  </Step>
+                </div>
+              </div>
+            </Reveal>
+            <Reveal delay={0.06}>
+              <div className="mt-12 grid items-start gap-6 lg:grid-cols-12">
+                <Detail
+                  src={`${IMG}/recs-conversation.jpg`}
+                  alt="The donor's message and the Companion's reply, with source chips for Where to Give and the Newbury Center page."
+                  className="lg:col-span-3"
+                />
+                <Frame
+                  src={`${IMG}/recommendations.jpg`}
+                  alt="Recommendations page: three funds labelled closest match, strong match and related, each with why it matches, a verified source link, a compare checkbox and an explore button."
+                  className="lg:col-span-9"
+                  imgClassName="max-h-[720px] object-cover object-top"
+                />
+              </div>
+            </Reveal>
+            <Reveal>
+              <div className="mt-10 grid gap-6 md:grid-cols-3">
+                {[
+                  ["Graded, not ranked", "“Closest match”, “Strong match”, “Related” say how strong the fit is without implying a score."],
+                  ["Reasons in the donor’s words", "“You said you want first-generation students to succeed…”"],
+                  ["Room to narrow", "Follow-ups like “Is there an option within my school?” keep the donor steering."],
+                ].map(([t, b]) => (
+                  <div key={t} className="border-t-2 border-ink pt-4">
+                    <h3 className="text-lg font-semibold">{t}</h3>
+                    <p className="mt-2 text-base leading-relaxed text-muted">{b}</p>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </div>
+
+        {/* 3 · Compare */}
+        <div id="compare" className="scroll-mt-28 border-t border-line py-12 md:py-16">
+          <div className="grid gap-10">
+            <Reveal className="order-2">
+              <Frame
+                src={`${IMG}/compare.jpg`}
+                alt="Compare funds side by side: a short plain-language summary, then rows for where each fund lives, what it pays for, who it reaches, verified updates and who it's best for, with a give button under each."
+              />
+            </Reveal>
+            <Reveal delay={0.06} className="order-1">
+              <Step n="3" title="Compare with confidence">
+                Two funds that both help first-generation students are easy to confuse. The comparison opens
+                with a one-paragraph short version, then lines them up on the questions donors actually weigh.
+              </Step>
+              <p className="mt-6 text-base leading-relaxed text-muted">
+                The last row, <em>Best if you want to…</em>, turns a spec sheet into a decision. A
+                &ldquo;Show differences only&rdquo; switch keeps longer comparisons readable.
+              </p>
+            </Reveal>
+          </div>
+        </div>
+
+        {/* 4 · Give */}
+        <div id="give" className="scroll-mt-28 border-t border-line py-12 md:py-16">
+          <div className="grid gap-10">
+            <Reveal>
+              <Step n="4" title="Give through BU, not around it">
+                The Companion stops where payment starts. It confirms the fund, explains what happens next,
+                and hands off to BU&apos;s existing secure giving form with the fund already selected.
+              </Step>
+              <ol className="mt-8 space-y-4">
+                {["Review fund", "BU Giving checkout", "Confirmation"].map((s, i) => (
+                  <li key={s} className="flex items-center gap-4">
+                    <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-full text-base font-semibold", i === 0 ? "border border-ink/70 text-ink" : "border border-line text-muted")}>{i + 1}</span>
+                    <span className="text-lg">{s}</span>
+                    {i === 1 && <span className="text-base text-faint">existing BU system</span>}
+                  </li>
+                ))}
+              </ol>
+            </Reveal>
+            <Reveal delay={0.06}>
+              <Frame src={`${IMG}/give.jpg`} alt="Give page: the chosen Newbury Center Fund, what happens next in three steps, and a 'Continue to BU Giving' button with a note that checkout is handled by BU's existing system." />
+            </Reveal>
+          </div>
+        </div>
+
+        {/* 5 · Stay connected — the immersive band */}
+        <div id="connected" className="scroll-mt-28 border-t border-line py-12 md:py-16">
+          <div>
+            <Reveal>
+              <Step n="5" title="Beyond the donation" >
+                A year later the donor asks, &ldquo;What&apos;s happening with the scholarship program I
+                supported last year?&rdquo; With permission to use their giving history, the Companion finds
+                what BU has published about that fund since the gift.
+              </Step>
+            </Reveal>
+            <div className="mt-14 grid items-start gap-8 lg:grid-cols-12">
+              <Reveal className="lg:col-span-7">
+                <Frame src={`${IMG}/journey.jpg`} alt="My Giving Journey: the donor's question, progress steps, the fund and gift date used with permission, two verified program updates, related stories, and a note on what couldn't be found." imgClassName="max-h-[860px] object-cover object-top" />
+              </Reveal>
+              <Reveal delay={0.08} className="space-y-8 lg:col-span-5 lg:pt-10">
+                <Detail src={`${IMG}/journey-updates.jpg`} alt="Verified program updates with dates and links to read more on bu.edu." />
+                <div>
+                  <p className="text-balance text-2xl font-semibold leading-snug tracking-tight">
+                    Program progress is not the same as your gift&apos;s impact.
+                  </p>
+                  <p className="mt-4 text-base leading-relaxed text-muted">
+                    The page keeps the two apart. It reports what BU has published about the program and says
+                    plainly that it can&apos;t connect an individual gift to an individual recipient.
+                  </p>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================ 05 TRUST BY DESIGN */}
+      <section id="trust" aria-labelledby="trust-h" className="scroll-mt-28 border-t border-line py-10 first:border-t-0 first:pt-0 md:py-14">
+        <div>
+          <Reveal>
+            <Kicker n="05">Trust by design</Kicker>
+            <h2 id="trust-h" className="max-w-[22ch] text-balance text-title font-semibold">
+              Six details that decide whether a donor believes it.
+            </h2>
+          </Reveal>
+          <div className="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            {TRUST.map((t, i) => (
+              <Reveal key={t.title} delay={(i % 3) * 0.05}>
+                <figure>
+                  <div className="aspect-[4/3] overflow-hidden rounded-xl border border-line bg-white">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={t.imgs[0].src} alt={t.imgs[0].alt} loading="lazy" className="block h-full w-full object-contain object-top p-3" />
+                  </div>
+                  <figcaption className="mt-5 border-t border-line pt-4">
+                    <p className="text-base tabular-nums text-faint">{String(i + 1).padStart(2, "0")}</p>
+                    <h3 className="mt-1 text-lg font-semibold">{t.title}</h3>
+                    <p className="mt-2 text-base leading-relaxed text-muted">{t.body}</p>
+                  </figcaption>
+                </figure>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===================================== 06 VALIDATION & NEXT STEPS */}
+      <section id="validation" aria-labelledby="val-h" className="scroll-mt-28 border-t border-line py-10 first:border-t-0 first:pt-0 md:py-14">
+        <div>
+          <Reveal>
+            <Kicker n="06">Validation and next steps</Kicker>
+            <h2 id="val-h" className="max-w-[22ch] text-balance text-title font-semibold">What this is, and what has to happen next.</h2>
+          </Reveal>
+
+          <Reveal delay={0.05}>
+            <div className="mt-10 flex flex-wrap items-center gap-3">
+              <Label tone="ink">Done: interactive concept prototype</Label>
+              <Label tone="lime">Next: donor usability study</Label>
+              <Label>Not done: donor testing, launch, results</Label>
+            </div>
+          </Reveal>
+
+          <div className="mt-14 grid gap-12 lg:grid-cols-12">
+            <Reveal className="lg:col-span-7">
+              <h3 className="mb-6 text-2xl font-semibold tracking-tight">Proposed donor tasks</h3>
+              <ol className="divide-y divide-line border-y border-line">
+                {[
+                  ["Find a fund that supports first-generation students.", "Does conversational discovery reach a relevant fund?"],
+                  ["Compare two funds.", "Can donors explain the difference in their own words?"],
+                  ["Verify where a recommendation came from.", "Do donors notice and use source links?"],
+                  ["Find updates about a program you supported.", "Is My Giving Journey findable, and is it clear what isn't known?"],
+                ].map(([task, learn], i) => (
+                  <li key={task} className="grid gap-2 py-5 sm:grid-cols-[2.5rem_1fr]">
+                    <span className="text-2xl font-semibold tabular-nums text-muted">{i + 1}</span>
+                    <div>
+                      <p className="text-lg font-medium">{task}</p>
+                      <p className="mt-1 text-base text-muted">{learn}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </Reveal>
+            <Reveal delay={0.06} className="lg:col-span-5">
+              <h3 className="mb-6 text-2xl font-semibold tracking-tight">What I&apos;d measure</h3>
+              <ul className="space-y-3">
+                {[
+ "Relevant fund discovery success",
+ "Accuracy of fund understanding",
+ "Time and effort to compare options",
+ "Recognition of verified evidence",
+ "Trust and perceived usefulness",
+ "Ability to find post-gift updates",
+                ].map((m) => (
+                  <li key={m} className="flex items-start gap-3 text-base leading-relaxed">
+                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-ink" aria-hidden />
+                    {m}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-8 text-base leading-relaxed text-muted">
+                I&apos;d run the same tasks against a structured fund finder too. If it performs as well, it is
+                the simpler product to ship.
+              </p>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* =================================================== 07 REFLECTION */}
+      <section id="lessons" aria-labelledby="ref-h" className="scroll-mt-28 border-t border-line py-10 first:border-t-0 first:pt-0 md:py-14">
+        <div>
+          <Reveal>
+            <Kicker n="07">Reflection</Kicker>
+            <Serif id="ref-h" className="max-w-[26ch]">
+              The opportunity wasn&apos;t to create more fundraising content. It was to explore how existing
+              experiences could become more connected and meaningful.
+            </Serif>
+          </Reveal>
+          <Reveal delay={0.06}>
+            <p className="mt-10 max-w-prose text-pretty text-lg leading-relaxed text-muted">
+              The concept is only as good as its first test with real donors. That is the critical next step,
+              alongside an honest comparison with simpler, non-AI alternatives.
+            </p>
+          </Reveal>
+        </div>
+      </section>
+          </div>
+        </div>
+      </div>
+
+      {/* ======================================================== NEXT */}
+      {next && (
+        <section className="border-t border-line">
+          <Link href={`/work/${next.slug}`} className="group block py-14 transition-colors hover:bg-surface md:py-20">
+            <div className="shell">
+              <div className="eyebrow mb-6">Next case study</div>
+              <div className="flex flex-wrap items-end justify-between gap-8">
+                <h2 className="text-balance text-title font-semibold">
+                  {next.title}
+                  <span className="block text-muted">{next.subtitle}</span>
+                </h2>
+                <svg width="40" height="40" viewBox="0 0 14 14" fill="none" aria-hidden className="text-faint transition-all duration-500 ease-out group-hover:translate-x-2 group-hover:text-ink">
+                  <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="0.8" />
+                </svg>
+              </div>
+            </div>
+          </Link>
+        </section>
+      )}
+    </article>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Pieces                                                              */
+/* ------------------------------------------------------------------ */
+
+function Step({ n, title, children, invert }: { n: string; title: string; children: React.ReactNode; invert?: boolean }) {
+  return (
+    <div>
+      <div className={cn("mb-4 text-base font-semibold uppercase tracking-[0.06em]", invert ? "text-faint" : "text-muted")}>
+        Step {n}
+      </div>
+      <h3 className="text-balance text-2xl font-semibold tracking-tight">{title}</h3>
+      <p className={cn("mt-5 max-w-[46ch] text-pretty text-lg leading-relaxed", invert ? "text-muted" : "text-muted")}>{children}</p>
+    </div>
+  );
+}
+
+const TOUCHPOINTS = ["Where to Give directory", "Fund pages", "Donation form", "Impact stories"];
+const GAPS = ["Which fund fits what I care about?", "How is this different from that one?", "What happened after I gave?"];
+
+/** B — the fragmented journey vs. the connected one. */
+function FragmentedJourney() {
+  return (
+    <div className="mt-14 space-y-10">
+      <Reveal>
+        <figure>
+          <figcaption className="mb-4 flex items-center gap-3">
+            <Label>Today</Label>
+            <span className="text-base text-muted">Separate touchpoints. The donor connects them.</span>
+          </figcaption>
+          <ol className="grid gap-3 md:grid-cols-4">
+            {TOUCHPOINTS.map((t, i) => (
+              <li key={t} className="relative">
+                <div className={cn("rounded-xl border border-line bg-canvas px-4 py-5 text-lg font-medium", i % 2 ? "md:mt-6" : "md:-mt-1")}>{t}</div>
+                {i < GAPS.length && (
+                  <p className="mt-3 text-base text-muted md:absolute md:left-[60%] md:top-full md:mt-10 md:w-[85%]">
+                    <span className="text-ink">?</span> {GAPS[i]}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ol>
+          <p className="mt-6 text-base text-faint md:mt-28">Gaps shown are assumptions to validate with donors.</p>
+        </figure>
+      </Reveal>
+      <Reveal delay={0.05}>
+        <figure>
+          <figcaption className="mb-4 flex items-center gap-3">
+            <Label tone="lime">Proposed</Label>
+            <span className="text-base text-muted">The same touchpoints, connected by one guidance layer.</span>
+          </figcaption>
+          <div className="relative rounded-2xl border border-ink/70 bg-surface p-4 md:p-5">
+            <ol className="relative grid gap-3 md:grid-cols-4">
+              {TOUCHPOINTS.map((t) => (
+                <li key={t} className="rounded-xl border border-line bg-canvas px-4 py-5 text-lg font-medium">{t}</li>
+              ))}
+            </ol>
+            <div className="mt-4 flex items-center gap-3 px-1 text-ink">
+              <span className="h-px flex-1 bg-ink/30" aria-hidden />
+              <span className="text-base font-semibold">Giving Companion · one continuous journey</span>
+              <span className="h-px flex-1 bg-ink/30" aria-hidden />
+            </div>
+          </div>
+        </figure>
+      </Reveal>
+    </div>
+  );
+}
+
+/** C — what the Companion connects. */
+function EcosystemDiagram() {
+  const nodes = [
+    { t: "Donor-provided interests", b: "Their own words, plus giving history only with permission." },
+    { t: "Verified fund information", b: "Where to Give and school fund pages." },
+    { t: "Published impact content", b: "Your Impact stories and BU news." },
+    { t: "Existing donation system", b: "BU's secure giving form handles payment." },
+  ];
+  return (
+    <Reveal>
+      <figure className="mt-20">
+        <figcaption className="mb-6 text-2xl font-semibold tracking-tight">What the Companion connects</figcaption>
+        <div className="relative grid gap-4 md:grid-cols-2 md:gap-x-40 md:gap-y-10">
+          {nodes.map((n, i) => (
+            <div key={n.t} className={cn("relative rounded-2xl border border-line bg-surface p-6", i % 2 ? "md:text-left" : "md:text-right")}>
+              <p className="text-lg font-semibold">{n.t}</p>
+              <p className="mt-1 text-base leading-relaxed text-muted">{n.b}</p>
+              <span
+                aria-hidden
+                className={cn(
+ "absolute top-1/2 hidden h-px w-20 bg-ink/40 md:block",
+                  i % 2 ? "-left-20" : "-right-20",
+                )}
+              />
+            </div>
+          ))}
+          <div className="order-first grid place-items-center md:absolute md:inset-0 md:order-none md:pointer-events-none">
+            <div className="grid h-36 w-36 place-items-center rounded-full border border-ink/70 bg-canvas text-center text-lg font-semibold leading-tight text-ink shadow-[0_0_0_10px_rgb(var(--canvas))]">
+              Giving
+              <br />
+              Companion
+            </div>
+          </div>
+        </div>
+        <p className="mt-6 max-w-prose text-base text-faint">
+          The Companion stores nothing new about the gift itself. It reads what BU already publishes and
+          hands off to what BU already runs.
+        </p>
+      </figure>
+    </Reveal>
+  );
+}
+
+const TRUST = [
+  {
+    title: "Recommendations explain themselves",
+    body: "Every fund says why it matched, in terms of what the donor said, and how strong the match is.",
+    imgs: [{ src: `${IMG}/recs-match.jpg`, alt: "Fund card with a 'Why this matches you' explanation, a verified badge and a source link." }],
+  },
+  {
+    title: "Sources you can check",
+    body: "Plain-language answers link back to the BU pages they came from and say what they don't cover.",
+    imgs: [{ src: `${IMG}/plain-language.jpg`, alt: "'In plain language' panel with source chips and a note that it doesn't include financial outcomes BU hasn't published." }],
+  },
+  {
+    title: "Permission is visible and reversible",
+    body: "Giving history is used only when the donor allows it, and the page shows exactly what was used, with a Manage link.",
+    imgs: [{ src: `${IMG}/journey-permission.jpg`, alt: "Progress steps including 'Checking your giving history (permission on)' and a chip showing the fund and gift date used, with a Manage link." }],
+  },
+  {
+    title: "Honest about what it doesn't know",
+    body: "When BU hasn't published something, the Companion says so instead of estimating.",
+    imgs: [
+      { src: `${IMG}/verified-impact.jpg`, alt: "Verified impact information with sources for each figure, and a 'Not available' note that per-gift outcomes aren't published." },
+      { src: `${IMG}/journey-gap.jpg`, alt: "Note: What I couldn't find — BU hasn't published which students received support from your specific gift." },
+    ],
+  },
+  {
+    title: "A person is always one step away",
+    body: "Talking to someone from advancement is offered on every screen, not hidden behind the assistant.",
+    imgs: [{ src: `${IMG}/journey-person.jpg`, alt: "Panel: Want to talk this through with a person? with a Request a conversation button." }],
+  },
+  {
+    title: "The donor decides, BU handles payment",
+    body: "Remembering the fund is opt-in, and checkout happens in BU's existing system. The Companion never sees payment details.",
+    imgs: [{ src: `${IMG}/give-handoff.jpg`, alt: "Ready to give panel: optional 'Remember this fund' checkbox, Continue to BU Giving button, and a note that the Companion never sees payment details." }],
+  },
+];

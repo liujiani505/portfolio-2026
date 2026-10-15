@@ -1,0 +1,236 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* ------------------------------------------------------------------
+   Design tokens
+   Neutrals plus one colour — lime green. Every text colour is AAA.
+   ------------------------------------------------------------------ */
+@layer base {
+  :root {
+    /* Quiet Grid: warm-neutral paper, near-black ink, no accent hue. All text AAA. */
+    --canvas: 247 247 245;
+    --surface: 239 239 235; /* the AI Lab band and quiet fills */
+    --ink: 31 31 30;
+    --muted: 74 74 72;
+    --faint: 74 74 72;
+    --line: 222 220 214;
+    --accent: 31 31 30;
+    --accent-soft: 239 239 235;
+    --grain-opacity: 0;
+    --lime: 200 240 82;
+    color-scheme: light;
+  }
+
+  .dark {
+    --canvas: 20 20 19;
+    --surface: 30 30 28;
+    --ink: 236 236 232;
+    --muted: 180 180 174;
+    --faint: 180 180 174;
+    --line: 54 54 50;
+    --accent: 236 236 232;
+    --accent-soft: 30 30 28;
+    --grain-opacity: 0;
+    --lime: 200 240 82;
+    color-scheme: dark;
+  }
+
+  * {
+    border-color: rgb(var(--line));
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      animation-delay: 0s !important;
+    }
+    .lift:hover,
+    .group:hover > .lift,
+    a.rounded-full:hover,
+    button.rounded-full:hover {
+      transform: none !important;
+    }
+  }
+
+  body {
+    background-color: rgb(var(--canvas));
+    color: rgb(var(--ink));
+    font-feature-settings: "ss01" 1, "cv11" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: rgb(var(--accent) / 0.16);
+    color: rgb(var(--ink));
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Scrollbar — quiet, not invisible */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--line));
+    border-radius: 999px;
+    border: 3px solid rgb(var(--canvas));
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--faint));
+  }
+}
+
+@layer components {
+
+  /* Highlighter: a marker stroke swept across the words — soft leading edge,
+     slightly tilted and uneven like a real pen, easing in and out. */
+  .marker {
+    position: relative;
+    display: inline-block;
+    isolation: isolate;
+    animation: marker-ink 1.5s cubic-bezier(0.4, 0, 0.2, 1) 1.15s both;
+  }
+  .marker::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 10% -0.16em 2% -0.14em;
+    background: rgb(var(--lime));
+    border-radius: 0.5em 0.16em 0.6em 0.2em / 0.28em 0.6em 0.22em 0.5em;
+    transform: rotate(-1.2deg) skewX(-9deg);
+    -webkit-mask: linear-gradient(90deg, #000 82%, transparent) no-repeat 0 0 / 0% 100%;
+    mask: linear-gradient(90deg, #000 82%, transparent) no-repeat 0 0 / 0% 100%;
+    animation: marker-sweep 1.5s cubic-bezier(0.4, 0, 0.2, 1) 1.15s both;
+  }
+  @keyframes marker-sweep {
+    from {
+      -webkit-mask-size: 0% 100%;
+      mask-size: 0% 100%;
+    }
+    to {
+      -webkit-mask-size: 125% 100%;
+      mask-size: 125% 100%;
+    }
+  }
+  @keyframes marker-ink {
+    from {
+      color: rgb(var(--ink));
+    }
+    to {
+      color: rgb(22 28 6);
+    }
+  }
+
+  /* Micro-interactions: pills and buttons lift on hover and press in on click. */
+  a.rounded-full,
+  button.rounded-full {
+    transition-property: transform, opacity, color, background-color, border-color;
+    transition-duration: 220ms;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  a.rounded-full:hover,
+  button.rounded-full:not(:disabled):hover {
+    transform: translateY(-1.5px);
+  }
+  a.rounded-full:active,
+  button.rounded-full:not(:disabled):active {
+    transform: translateY(0) scale(0.97);
+  }
+
+  /* Cards rise slightly and gain a soft shadow. */
+  .lift {
+    transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 420ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 420ms;
+  }
+  .lift:hover,
+  .group:hover > .lift,
+  .group:focus-visible > .lift {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px -24px rgb(var(--ink) / 0.28);
+  }
+
+
+  .shell {
+    @apply mx-auto w-full max-w-shell px-gutter;
+  }
+
+  /* Small structural label: 16px, uppercase, medium. */
+  .eyebrow {
+    @apply font-sans text-eyebrow font-medium uppercase text-muted;
+  }
+
+  /* Screens shown straight on the page: soft corners, faint lift, no frame. */
+  .shot {
+    @apply overflow-hidden rounded-xl bg-white;
+    box-shadow: 0 1px 0 rgb(0 0 0 / 0.04), 0 28px 56px -38px rgb(0 0 0 / 0.38);
+  }
+
+  /* Outline pill button */
+  .pill {
+    @apply inline-flex items-center gap-2 rounded-full border border-ink px-5 py-2.5 text-base font-medium text-ink transition-colors hover:bg-ink hover:text-canvas;
+  }
+
+  .rule {
+    @apply h-px w-full bg-line;
+  }
+
+  /* Link with a rule that draws itself in from the left */
+  .link-underline {
+    @apply relative inline-flex items-center;
+  }
+  .link-underline::after {
+    content: "";
+    @apply absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-current transition-transform duration-500 ease-out;
+  }
+  .link-underline:hover::after,
+  .link-underline:focus-visible::after {
+    @apply origin-left scale-x-100;
+  }
+
+  .hairline-grid {
+    background-image: linear-gradient(to right, rgb(var(--line)) 1px, transparent 1px);
+    background-size: calc(100% / 12) 100%;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  }
+  .mask-fade-x {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  }
+}

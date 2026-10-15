@@ -1,0 +1,897 @@
+"use client";
+
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import type { Block } from "@/content/types";
+import { Reveal, MetricCell } from "@/components/ui/primitives";
+import { Visual } from "@/components/visuals";
+import { cn, ease } from "@/lib/utils";
+
+export function BlockRenderer({ block }: { block: Block }) {
+  switch (block.type) {
+    case "prose":
+      return (
+        <Reveal>
+          <div className="max-w-prose">
+            {block.title && (
+              <h3 className="mb-5 text-2xl font-semibold tracking-tight">{block.title}</h3>
+            )}
+            <div className="space-y-5 text-pretty text-lg leading-relaxed text-muted">
+              {block.body.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      );
+
+    case "metrics":
+      return (
+        <Reveal>
+          <div>
+            {block.title && <BlockTitle>{block.title}</BlockTitle>}
+            <div
+              className={cn(
+ "grid gap-x-8 gap-y-10",
+                block.items.length <= 3
+                  ? "sm:grid-cols-3"
+                  : "sm:grid-cols-2 lg:grid-cols-3",
+              )}
+            >
+              {block.items.map((m) => (
+                <MetricCell key={m.label} {...m} />
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      );
+
+    case "columns":
+      return (
+        <Reveal>
+          <div>
+            {block.title && <BlockTitle>{block.title}</BlockTitle>}
+            <div
+              className={cn(
+ "grid gap-x-8 gap-y-10",
+                block.items.length === 4 ? "sm:grid-cols-2 lg:grid-cols-4" : "sm:grid-cols-3",
+              )}
+            >
+              {block.items.map((c) => (
+                <div key={c.title} className="border-t border-line pt-5">
+                  <h3 className={cn("text-lg font-semibold leading-snug", c.title.startsWith("[") && "font-sans font-medium text-base text-accent")}>{c.title}</h3>
+                  <p className="mt-2.5 text-base leading-relaxed text-muted">{c.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      );
+
+    case "tradeoffs":
+      return (
+        <Reveal>
+          <div>
+            {block.title && <BlockTitle>{block.title}</BlockTitle>}
+            <div className="space-y-4">
+              {block.items.map((t) => (
+                <TradeoffCard key={t.decision} t={t} />
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      );
+
+    case "iterations":
+      return (
+        <Reveal>
+          <div>
+            {block.title && <BlockTitle>{block.title}</BlockTitle>}
+            <ol className="relative border-l border-line pl-8">
+              {block.items.map((it, i) => (
+                <li key={it.version} className="relative pb-10 last:pb-0">
+                  <span
+                    className={cn(
+ "absolute -left-[calc(2rem+4px)] top-1.5 h-2 w-2 rounded-full ring-4 ring-canvas",
+                      it.killed ? "bg-line" : i === block.items.length - 1 ? "bg-accent" : "bg-ink",
+                    )}
+                    aria-hidden
+                  />
+                  <div className="flex flex-wrap items-baseline gap-3">
+                    <span className="font-sans font-medium text-base uppercase tracking-[0.06em] text-faint">
+                      {it.version}
+                    </span>
+                    <h3 className="text-lg font-semibold tracking-tight">{it.name}</h3>
+                    {it.killed && (
+                      <span className="rounded-full border border-line px-2 py-0.5 font-sans font-medium text-base uppercase tracking-[0.06em] text-faint">
+                        killed
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-2.5 max-w-prose text-base leading-relaxed text-muted">
+                    {it.what}
+                  </p>
+                  <p className="mt-3 max-w-prose border-l-2 border-accent/40 pl-4 text-base leading-relaxed text-ink/85">
+                    {it.learned}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </Reveal>
+      );
+
+    case "flow":
+      return (
+        <Reveal>
+          <div>
+            {block.title && <BlockTitle>{block.title}</BlockTitle>}
+            <ol className="divide-y divide-line border-y border-line">
+              {block.steps.map((s, i) => (
+                <li key={s.title} className="grid gap-3 py-6 md:grid-cols-12 md:gap-8">
+                  <div className="flex items-start gap-4 md:col-span-3">
+                    <span className="font-sans font-medium text-base tabular-nums text-faint">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span
+                      className={cn(
+ "rounded-full border px-2.5 py-0.5 font-sans font-medium text-base uppercase tracking-[0.06em]",
+                        s.actor === "Model"
+                          ? "border-accent/40 text-accent"
+                          : s.actor === "Human"
+                            ? "border-ink bg-ink text-canvas"
+                            : s.actor === "Human + Model"
+                              ? "border-accent/40 bg-accent/10 text-accent"
+                              : "border-line text-faint",
+                      )}
+                    >
+                      {s.actor}
+                    </span>
+                  </div>
+                  <div className="md:col-span-9">
+                    <h3 className="text-lg font-semibold tracking-tight">{s.title}</h3>
+                    <p className="mt-2 max-w-prose text-base leading-relaxed text-muted">
+                      {s.body}
+                    </p>
+                    {s.guardrail && (
+                      <p className="mt-3 flex max-w-prose gap-2.5 text-base leading-relaxed text-faint">
+                        <span
+                          className="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-accent"
+                          aria-hidden
+                        />
+                        <span>
+                          <span className="font-sans font-medium text-base uppercase tracking-[0.06em] text-accent">
+                            Guardrail{" "}
+                          </span>
+                          {s.guardrail}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </Reveal>
+      );
+
+    case "prompt":
+      return (
+        <Reveal>
+          <div>
+            {block.title && <BlockTitle>{block.title}</BlockTitle>}
+            <div className="overflow-hidden rounded-xl border border-line bg-surface">
+              <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
+                <span className="font-sans font-medium text-base tracking-[0.06em] text-muted">
+                  {block.label}
+                </span>
+                <span className="font-sans font-medium text-base uppercase tracking-[0.06em] text-faint">
+                  system prompt
+                </span>
+              </div>
+              <pre className="overflow-x-auto px-4 py-5 font-sans font-medium text-base leading-relaxed text-ink/85">
+                <code>{block.body}</code>
+              </pre>
+            </div>
+            <div className="mt-6 grid gap-6 sm:grid-cols-3">
+              {block.annotations.map((a) => (
+                <div key={a.k} className="border-t border-line pt-4">
+                  <h3 className="text-lg font-semibold leading-snug text-accent">{a.k}</h3>
+                  <p className="mt-2 text-base leading-relaxed text-muted">{a.v}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      );
+
+    case "confidence":
+      return (
+        <Reveal>
+          <div>
+            {block.title && <BlockTitle>{block.title}</BlockTitle>}
+            <div className="divide-y divide-line border-y border-line">
+              {block.bands.map((b, i) => (
+                <div key={b.range} className="grid gap-3 py-6 md:grid-cols-12 md:gap-8">
+                  <div className="md:col-span-3">
+                    <div className="font-sans font-medium text-base tabular-nums text-ink">{b.range}</div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="h-1 w-16 overflow-hidden rounded-full bg-line">
+                        <motion.div
+                          className="h-full rounded-full bg-accent"
+                          initial={{ width: 0 }}
+                          whileInView={{ width: b.share }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.9, ease: ease.out, delay: 0.1 + i * 0.08 }}
+                          style={{ opacity: 1 - i * 0.2 }}
+                        />
+                      </div>
+                      <span className="font-sans font-medium text-base tabular-nums text-faint">
+                        {b.share}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="md:col-span-9">
+                    <h3 className="text-lg font-semibold tracking-tight">{b.behaviour}</h3>
+                    <p className="mt-2 max-w-prose text-base leading-relaxed text-muted">
+                      {b.surface}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      );
+
+    case "quote":
+      return (
+        <Reveal>
+          <figure className="max-w-3xl border-l-2 border-accent pl-6 md:pl-10">
+            <blockquote className="text-balance text-2xl font-medium leading-snug tracking-tight">
+              &ldquo;{block.body}&rdquo;
+            </blockquote>
+            <figcaption className="mt-5 font-sans font-medium text-base uppercase tracking-[0.06em] text-faint">
+              {block.attribution}
+            </figcaption>
+          </figure>
+        </Reveal>
+      );
+
+    case "callout":
+      return (
+        <Reveal>
+          <aside className="max-w-3xl border-t border-ink/70 pt-6">
+            <div className="eyebrow mb-3">{block.kind}</div>
+            <h3 className="text-2xl font-semibold tracking-tight">{block.title}</h3>
+            <p className="mt-3 max-w-prose text-pretty text-lg leading-relaxed text-muted">{block.body}</p>
+          </aside>
+        </Reveal>
+      );
+
+    case "table":
+      return (
+        <Reveal>
+          <div>
+            {block.title && <BlockTitle>{block.title}</BlockTitle>}
+            <div
+              className="-mx-gutter overflow-x-auto px-gutter md:mx-0 md:px-0"
+              tabIndex={0}
+              role="region"
+              aria-label={block.title ?? "Table"}
+            >
+              <table className="w-full min-w-[640px] border-collapse text-left">
+                <thead>
+                  <tr className="border-y border-line">
+                    {block.head.map((h) => (
+                      <th
+                        key={h}
+                        scope="col"
+                        className="py-3 pr-6 font-sans font-medium text-base font-normal uppercase tracking-[0.06em] text-faint last:pr-0"
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {block.rows.map((row, i) => (
+                    <tr key={i} className="border-b border-line align-top">
+                      {row.map((cell, j) => (
+                        <td
+                          key={j}
+                          className={cn(
+ "py-5 pr-6 text-base leading-relaxed last:pr-0",
+                            cell.startsWith("[")
+                              ? "font-sans font-medium text-base text-accent"
+                              : j === 0
+                                ? "text-ink"
+                                : "text-muted",
+                          )}
+                        >
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </Reveal>
+      );
+
+    case "visual":
+      return (
+        <Reveal>
+          <figure>
+            <div className="rounded-xl border border-line bg-surface p-6 md:p-12">
+              <Visual id={block.id} />
+            </div>
+            <figcaption className="mt-4 max-w-prose text-base leading-relaxed text-faint">
+              {block.caption}
+            </figcaption>
+          </figure>
+        </Reveal>
+      );
+
+    case "image":
+      return (
+        <Reveal>
+          <figure>
+            {block.label && (
+              <div className="mb-3 font-sans text-base font-semibold uppercase tracking-[0.06em] text-muted">
+                {block.label}
+              </div>
+            )}
+            <div
+              className={cn(
+ "relative overflow-hidden rounded-xl border border-line bg-white",
+                block.scroll && "max-h-[80vh] overflow-y-auto",
+              )}
+              {...(block.scroll
+                ? { tabIndex: 0, role: "region", "aria-label": `${block.alt} (scrollable)` }
+                : {})}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={block.src} alt={block.alt} loading="lazy" className="block h-auto w-full" />
+              {block.pins?.map((p, i) => (
+                <span
+                  key={p.title}
+                  aria-hidden
+                  style={{ left: `${p.x}%`, top: `${p.y}%` }}
+                  className="absolute grid h-8 w-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[#161a14] text-base font-semibold text-white shadow-[0_0_0_3px_rgb(255_255_255)]"
+                >
+                  {i + 1}
+                </span>
+              ))}
+            </div>
+            {block.pins && (
+              <ol className="mt-6 grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+                {block.pins.map((p, i) => (
+                  <li key={p.title} className="flex gap-3">
+                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-ink/70 text-base font-semibold text-ink">
+                      {i + 1}
+                    </span>
+                    <span>
+                      <span className="block text-base font-medium">{p.title}</span>
+                      <span className="block text-base leading-relaxed text-muted">{p.body}</span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            )}
+            {(block.caption || block.scroll) && (
+              <figcaption className="mt-4 max-w-prose text-base leading-relaxed text-faint">
+                {block.caption}{" "}
+                {block.scroll && (
+                  <a href={block.src} target="_blank" rel="noopener noreferrer" className="text-ink underline underline-offset-4">
+                    Open full size
+                  </a>
+                )}
+              </figcaption>
+            )}
+          </figure>
+        </Reveal>
+      );
+
+    case "compare":
+      return (
+        <Reveal>
+          <figure>
+            <div className="grid gap-5 lg:grid-cols-2">
+              {[block.before, block.after].map((side, i) => (
+                <div key={side.src}>
+                  <div className="mb-3 flex items-center gap-3">
+                    <span
+                      className={cn(
+ "rounded-full px-3 py-1 text-base font-semibold",
+                        i === 1 ? "border border-ink/70 text-ink" : "border border-line text-muted",
+                      )}
+                    >
+                      {i === 0 ? "Before" : "After"}
+                    </span>
+                    <span className="text-base text-muted">{side.label}</span>
+                  </div>
+                  <div className="overflow-hidden rounded-xl border border-line bg-white">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={side.src} alt={side.alt} loading="lazy" className="block h-auto w-full" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            {block.caption && (
+              <figcaption className="mt-4 max-w-prose text-base leading-relaxed text-faint">{block.caption}</figcaption>
+            )}
+          </figure>
+        </Reveal>
+      );
+
+    case "statement":
+      return (
+        <Reveal>
+          <div className="py-4">
+            <p className="max-w-[20ch] text-balance text-title font-semibold">
+              {block.body}
+            </p>
+            {block.sub && (
+              <p className="mt-6 max-w-prose text-pretty text-lede text-muted">{block.sub}</p>
+            )}
+          </div>
+        </Reveal>
+      );
+
+    case "chain": {
+      const row = block.direction === "row";
+      return (
+        <Reveal>
+          <figure>
+            {block.title && <BlockTitle>{block.title}</BlockTitle>}
+            <ol className={cn("flex gap-2", row ? "flex-col md:flex-row md:items-stretch" : "max-w-md flex-col")}>
+              {block.steps.map((st, i) => (
+                <li key={st.label} className={cn("flex gap-2", row ? "flex-col md:flex-1 md:flex-row md:items-center" : "flex-col")}>
+                  <div
+                    className={cn(
+ "flex-1 rounded-xl border px-5 py-4",
+                      i === block.steps.length - 1 ? "border-ink/70 bg-surface" : "border-line bg-surface",
+                    )}
+                  >
+                    <div className="text-base font-semibold">{st.label}</div>
+                    {st.note && (
+                      <div className={cn("mt-1 text-base leading-snug", "text-muted")}>
+                        {st.note}
+                      </div>
+                    )}
+                  </div>
+                  {i < block.steps.length - 1 && (
+                    <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden className={cn("mx-auto shrink-0 text-muted", row ? "rotate-90 md:rotate-0" : "rotate-90")}>
+                      <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.4" />
+                    </svg>
+                  )}
+                </li>
+              ))}
+            </ol>
+            {block.caption && (
+              <figcaption className="mt-4 max-w-prose text-base leading-relaxed text-faint">{block.caption}</figcaption>
+            )}
+          </figure>
+        </Reveal>
+      );
+    }
+
+    case "cta":
+      return (
+        <Reveal>
+          <div className="flex flex-wrap items-center gap-4">
+            <a
+              href={block.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-3 rounded-full bg-ink px-6 py-3 text-lg font-medium text-canvas"
+            >
+              {block.label}
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden className="transition-transform duration-500 ease-out group-hover:translate-x-1">
+                <path d="M4 10L10 4M10 4H5M10 4V9" stroke="currentColor" strokeWidth="1.4" />
+              </svg>
+              <span className="sr-only">(opens in a new tab)</span>
+            </a>
+            {block.note && <span className="text-base text-muted">{block.note}</span>}
+          </div>
+        </Reveal>
+      );
+
+    case "gallery":
+      return (
+        <Reveal>
+          <div className="grid gap-6 md:grid-cols-3">
+            {block.items.map((g) => (
+              <figure key={g.src}>
+                <div className="aspect-[4/3] overflow-hidden rounded-xl border border-line bg-white">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={g.src} alt={g.alt} loading="lazy" className="h-full w-full object-cover object-left-top" />
+                </div>
+                <figcaption className="mt-4">
+                  <span className="block text-base font-semibold">{g.title}</span>
+                  <span className="mt-1 block text-base leading-relaxed text-muted">{g.body}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </Reveal>
+      );
+
+    case "placeholder":
+      return (
+        <Reveal>
+          <PlaceholderBlock tag={block.tag} prompt={block.prompt} variant={block.variant} />
+        </Reveal>
+      );
+
+    case "evidence":
+      return (
+        <Reveal>
+          <div>
+            {block.title && <BlockTitle>{block.title}</BlockTitle>}
+            {block.intro && (
+              <p className="mb-10 max-w-prose text-pretty text-base leading-relaxed text-muted">
+                {block.intro}
+              </p>
+            )}
+            <div className="space-y-12">
+              {EVIDENCE_LEVELS.map((lvl) => {
+                const items = block.items.filter((i) => i.level === lvl.id);
+                if (!items.length) return null;
+                return (
+                  <section key={lvl.id} aria-label={lvl.label}>
+                    <div className="mb-4 flex items-center gap-3">
+                      <EvidenceMark level={lvl.id} />
+                      <h3
+                        className={cn(
+ "font-sans font-medium text-base uppercase tracking-[0.06em]",
+                          lvl.id === "validated" ? "text-accent" : "text-ink",
+                        )}
+                      >
+                        {lvl.label}
+                      </h3>
+                      <span className="text-base text-faint">{lvl.gloss}</span>
+                    </div>
+                    <ul className="divide-y divide-line border-y border-line">
+                      {items.map((it) => (
+                        <li key={it.statement} className="grid gap-2 py-5 md:grid-cols-12 md:gap-8">
+                          <p
+                            className={cn(
+ "text-pretty text-base leading-relaxed md:col-span-8",
+                              isGap(it.statement)
+                                ? "font-sans font-medium text-base text-accent"
+                                : lvl.id === "hypothesis"
+                                  ? "text-ink/80"
+                                  : "text-ink",
+                            )}
+                          >
+                            {it.statement}
+                          </p>
+                          <p className="text-base leading-relaxed text-faint md:col-span-4">
+                            {it.basis}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                );
+              })}
+            </div>
+          </div>
+        </Reveal>
+      );
+
+    case "implementation":
+      return (
+        <Reveal>
+          <ImplementationBlock block={block} />
+        </Reveal>
+      );
+
+    case "shift":
+      return (
+        <Reveal>
+          <div>
+            {block.title && <BlockTitle>{block.title}</BlockTitle>}
+            <ShiftDiagram from={block.from} to={block.to} />
+          </div>
+        </Reveal>
+      );
+
+    default:
+      return null;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Placeholder — a gap that cannot be mistaken for content             */
+/* ------------------------------------------------------------------ */
+
+const isGap = (s: string) => s.startsWith("[NEED INPUT") || s.startsWith("[ADD ");
+
+export function PlaceholderBlock({
+  tag,
+  prompt,
+  variant = "note",
+}: {
+  tag: string;
+  prompt: string;
+  variant?: "note" | "frame";
+}) {
+  return (
+    <aside
+      data-placeholder
+      className={cn(
+ "rounded-xl border border-dashed border-accent/50 bg-accent-soft/40",
+        variant === "frame"
+          ? "flex aspect-[16/10] w-full flex-col items-center justify-center p-8 text-center"
+          : "max-w-3xl p-6",
+      )}
+    >
+      <div className="font-sans font-medium text-base uppercase tracking-[0.06em] text-accent">[{tag}]</div>
+      <p
+        className={cn(
+ "mt-3 text-pretty text-base leading-relaxed text-muted",
+          variant === "frame" && "max-w-[52ch]",
+        )}
+      >
+        {prompt}
+      </p>
+    </aside>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Evidence levels                                                     */
+/* ------------------------------------------------------------------ */
+
+const EVIDENCE_LEVELS = [
+  { id: "observation", label: "Observation", gloss: "What the data shows" },
+  { id: "hypothesis", label: "Hypothesis", gloss: "What I think it means — untested" },
+  { id: "validated", label: "Validated finding", gloss: "Tested, and it held" },
+] as const;
+
+/** Empty ring → half → solid. Certainty carried by shape, not colour alone. */
+function EvidenceMark({ level }: { level: "observation" | "hypothesis" | "validated" }) {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden className="shrink-0">
+      <circle cx="6" cy="6" r="5" fill="none" strokeWidth="1.2" className={level === "validated" ? "stroke-accent" : "stroke-ink"} />
+      {level === "hypothesis" && <path d="M6 1a5 5 0 0 1 0 10z" className="fill-ink" />}
+      {level === "validated" && <circle cx="6" cy="6" r="5" className="fill-accent" />}
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Implementation thinking + "Under the hood"                          */
+/* ------------------------------------------------------------------ */
+
+function ImplementationBlock({ block }: { block: Extract<Block, { type: "implementation" }> }) {
+  const [open, setOpen] = useState(false);
+  const hood = block.underHood;
+
+  return (
+    <div className="rounded-xl border border-line bg-surface p-6 md:p-10">
+      <div className="mb-3 font-sans font-medium text-base uppercase tracking-[0.06em] text-accent">
+        Implementation thinking
+      </div>
+      {block.title && <h3 className="text-2xl font-semibold tracking-tight">{block.title}</h3>}
+      {block.intro && (
+        <p className="mt-3 max-w-prose text-pretty text-base leading-relaxed text-muted">
+          {block.intro}
+        </p>
+      )}
+
+      <div className="mt-8 grid gap-x-10 gap-y-8 sm:grid-cols-2">
+        {block.points.map((p) => (
+          <div key={p.title} className="border-t border-line pt-4">
+            <h3 className="text-lg font-semibold leading-snug">{p.title}</h3>
+            <p
+              className={cn(
+ "mt-2 text-base leading-relaxed",
+                p.body.startsWith("[") ? "font-sans font-medium text-base text-accent" : "text-muted",
+              )}
+            >
+              {p.body}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {hood && (
+        <div className="mt-8 border-t border-line pt-5">
+          <button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+            className="flex w-full items-center justify-between gap-4 text-left"
+          >
+            <span className="flex items-center gap-3">
+              <span className="font-sans font-medium text-base uppercase tracking-[0.06em] text-faint">
+                Under the hood
+              </span>
+              <span className="text-base font-medium">{hood.label}</span>
+            </span>
+            <motion.span
+              animate={{ rotate: open ? 45 : 0 }}
+              transition={{ duration: 0.35, ease: ease.soft }}
+              className="grid h-6 w-6 shrink-0 place-items-center text-faint"
+              aria-hidden
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12">
+                <path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="1.2" />
+              </svg>
+            </motion.span>
+          </button>
+          <AnimatePresence initial={false}>
+            {open && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.4, ease: ease.soft }}
+                className="overflow-hidden"
+              >
+                <div className="pt-6">
+                  <StepChain steps={hood.steps} tone="accent" />
+                  <p
+                    className={cn(
+ "mt-5 max-w-prose text-base leading-relaxed",
+                      hood.note.startsWith("[") ? "font-sans font-medium text-base text-accent" : "text-muted",
+                    )}
+                  >
+                    {hood.note}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Step chain + before → after shift                                   */
+/* ------------------------------------------------------------------ */
+
+function StepChain({ steps, tone }: { steps: string[]; tone: "muted" | "accent" }) {
+  return (
+    <ol className="flex flex-wrap items-center gap-x-2 gap-y-2.5">
+      {steps.map((s, i) => (
+        <li key={s} className="flex items-center gap-2">
+          <span
+            className={cn(
+ "rounded-full border px-3 py-1.5 font-sans font-medium text-base uppercase tracking-[0.06em]",
+              tone === "accent" ? "border-ink/40 text-ink" : "border-line text-faint",
+            )}
+          >
+            {s}
+          </span>
+          {i < steps.length - 1 && (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden className={tone === "accent" ? "text-ink/60" : "text-faint"}>
+              <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.1" />
+            </svg>
+          )}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+type ShiftSide = { label: string; steps: string[]; note: string };
+
+export function ShiftDiagram({ from, to }: { from: ShiftSide; to: ShiftSide }) {
+  return (
+    <div className="grid gap-px overflow-hidden rounded-xl border border-line bg-line">
+      <div className="bg-canvas p-6 md:p-8">
+        <div className="mb-4 font-sans font-medium text-base uppercase tracking-[0.06em] text-faint">{from.label}</div>
+        <StepChain steps={from.steps} tone="muted" />
+        <p className="mt-4 text-base leading-relaxed text-faint">{from.note}</p>
+      </div>
+      <div className="bg-surface p-6 md:p-8">
+        <div className="mb-4 font-sans font-medium text-base uppercase tracking-[0.06em] text-accent">{to.label}</div>
+        <StepChain steps={to.steps} tone="accent" />
+        <p className="mt-4 text-base leading-relaxed text-muted">{to.note}</p>
+      </div>
+    </div>
+  );
+}
+
+function BlockTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <h3 className="mb-8 text-2xl font-semibold tracking-tight">{children}</h3>
+  );
+}
+
+/** Decision explorer — collapsed by default so the page stays scannable. */
+function TradeoffCard({
+  t,
+}: {
+  t: { decision: string; chose: string; rejected: string; why: string; cost: string };
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-line bg-surface">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex w-full items-start justify-between gap-6 p-6 text-left md:p-8"
+      >
+        <div>
+          <div className="mb-2 font-sans font-medium text-base uppercase tracking-[0.06em] text-faint">
+            Decision
+          </div>
+          <h3 className="text-lg font-semibold tracking-tight">{t.decision}</h3>
+        </div>
+        <motion.span
+          animate={{ rotate: open ? 45 : 0 }}
+          transition={{ duration: 0.35, ease: ease.soft }}
+          className="mt-1 grid h-6 w-6 shrink-0 place-items-center text-faint"
+          aria-hidden
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12">
+            <path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="1.2" />
+          </svg>
+        </motion.span>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease: ease.soft }}
+            className="overflow-hidden"
+          >
+            <div className="px-6 pb-8 md:px-8">
+              <div className="grid gap-6 border-t border-line pt-6 md:grid-cols-2">
+                <div>
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden />
+                    <span className="font-sans font-medium text-base uppercase tracking-[0.06em] text-accent">
+                      Chose
+                    </span>
+                  </div>
+                  <p className="text-base leading-relaxed text-ink/90">{t.chose}</p>
+                </div>
+                <div>
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-line" aria-hidden />
+                    <span className="font-sans font-medium text-base uppercase tracking-[0.06em] text-faint">
+                      Rejected
+                    </span>
+                  </div>
+                  <p className="text-base leading-relaxed text-faint line-through decoration-line">
+                    {t.rejected}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6 space-y-4 border-t border-line pt-6">
+                <div>
+                  <div className="mb-1.5 font-sans font-medium text-base uppercase tracking-[0.06em] text-faint">
+                    Reasoning
+                  </div>
+                  <p className="max-w-prose text-base leading-relaxed text-muted">{t.why}</p>
+                </div>
+                <div>
+                  <div className="mb-1.5 font-sans font-medium text-base uppercase tracking-[0.06em] text-faint">
+                    What it cost
+                  </div>
+                  <p className="max-w-prose text-base leading-relaxed text-muted">{t.cost}</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
