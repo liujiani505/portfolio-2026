@@ -12,7 +12,7 @@ export function Beyond() {
       body: "Bring stakeholders, designers, and technical partners together around a shared vision.",
     },
     {
-      title: "Explore what&apos;s next",
+      title: "Explore what’s next",
       body:
         "Experiment with AI-assisted workflows and emerging interactions to challenge established practices.",
     },
@@ -35,7 +35,7 @@ export function Beyond() {
               Great design is more than a polished interface.
             </h2>
             <p className="mt-4 max-w-[56ch] text-pretty text-base leading-relaxed text-muted">
-              It&apos;s about creating clarity, building alignment, and helping teams move forward.
+              It’s about creating clarity, building alignment, and helping teams move forward.
             </p>
           </Reveal>
 
