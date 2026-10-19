@@ -19,7 +19,7 @@ export const buGiving: CaseStudy = {
   proves:
     "Framing an ambiguous consumer opportunity, designing AI around trust, and being precise about what is still unvalidated.",
   thesis:
-    "A freelance project exploring how AI could connect an existing but fragmented university giving ecosystem into a more personal donor journey.",
+    "From identifying a donor experience gap to proposing an AI-powered solution that sparked interest at Boston University.",
   company: "Boston University",
   role: "Product Strategy, UX Research, AI Interaction Design, Prototyping",
   timeframe: "[NEED INPUT: timeframe]",
@@ -29,7 +29,7 @@ export const buGiving: CaseStudy = {
   card: {
     subtitleLines: ["Designing an AI giving", "companion for donors."],
     facts: [
-      { k: "Type", v: "Freelance project" },
+      { k: "Type", v: "Product Design Initiative" },
       { k: "Role", v: "Product strategy, UX research, AI interaction design, prototyping" },
       { k: "Status", v: "Interactive concept prototype" },
     ],
@@ -44,7 +44,7 @@ export const buGiving: CaseStudy = {
     eyebrow: "Boston University · Giving Companion",
     headline: "Connecting discovery, giving, and impact through AI.",
     facts: [
-      { k: "Type", v: "Freelance project" },
+      { k: "Type", v: "Product Design Initiative" },
       { k: "Role", v: "Product strategy, UX research, AI interaction design, prototyping" },
       { k: "Organization studied", v: "Boston University Alumni & Friends" },
       { k: "Status", v: "Concept prototype · donor testing planned" },
@@ -56,7 +56,7 @@ export const buGiving: CaseStudy = {
   },
   headlineMetrics: [],
   summary:
-    "Boston University Giving Companion is a freelance project: a concept for a donor-facing AI assistant inside Boston University's existing Alumni & Friends giving experience. It helps annual donors discover funds that match what they care about, compare them, give through BU's existing secure checkout, and later follow verified updates about programs they supported. It is an interactive concept prototype; donor usability validation is planned, not done.",
+    "Boston University Giving Companion is a Product Design Initiative: a concept for a donor-facing AI assistant inside Boston University's existing Alumni & Friends giving experience. It helps annual donors discover funds that match what they care about, compare them, give through BU's existing secure checkout, and later follow verified updates about programs they supported. It is an interactive concept prototype; donor usability validation is planned, not done.",
   keywords: [
     "bu",
     "boston university",

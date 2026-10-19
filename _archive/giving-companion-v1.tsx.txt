@@ -7,7 +7,7 @@
  * the story differs through layout — browser-framed screens, a journey rail,
  * close-up trust details. BU red appears only inside the concept screens.
  *
- * A freelance project, shown as a concept. Nothing claims donor testing,
+ * A Product Design Initiative, shown as a concept. Nothing claims donor testing,
  * BU endorsement, or results.
  */
 
@@ -148,7 +148,7 @@ export function GivingCompanionPage({ cs, next }: { cs: CaseStudy; next?: CaseSt
 
           <Reveal delay={0.12}>
             <p className="mt-10 max-w-[58ch] text-pretty text-lede text-muted">
-              A freelance project exploring how AI could connect an existing but fragmented university giving
+              A Product Design Initiative exploring how AI could connect an existing but fragmented university giving
               ecosystem into a more personal donor journey.
             </p>
           </Reveal>
@@ -157,7 +157,7 @@ export function GivingCompanionPage({ cs, next }: { cs: CaseStudy; next?: CaseSt
             <dl className="mt-12 grid gap-x-8 gap-y-8 border-t border-line pt-8 sm:grid-cols-2 lg:grid-cols-4">
               {[
                 { k: "Role", v: "Product Strategy, UX Research, AI Interaction Design, Prototyping" },
-                { k: "Type", v: "Freelance project" },
+                { k: "Type", v: "Product Design Initiative" },
                 { k: "Organization studied", v: "Boston University Alumni & Friends" },
                 { k: "Status", v: "Interactive concept prototype · donor usability validation planned" },
               ].map((f) => (

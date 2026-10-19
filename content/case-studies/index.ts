@@ -5,7 +5,7 @@ import { buGiving } from "./bu-giving";
 /**
  * Order matters — this is the reading order on the homepage.
  *  01 proves product design in a complex system
- *  02 proves consumer product thinking and AI trust design (freelance project)
+ *  02 proves consumer product thinking and AI trust design (Product Design Initiative)
  *
  * Earlier versions (incl. the Fidelity information-behavior case) are in /_archive/case-studies.
  */
