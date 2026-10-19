@@ -23,7 +23,7 @@ export const subaru: CaseStudy = {
   proves:
     "Complex systems, multiple roles and real business rules, resolved into a product people can operate.",
   thesis:
-    "Modernizing a recurring operational workflow connecting Sales Operations, six districts, and a 65-retailer network.",
+    "Transforming a complex vehicle allocation process into a connected experience across Sales Operations, six districts, and 65 retailers.",
   company: "Subaru of New England",
   role: "Lead Designer",
   timeframe: "[NEED INPUT: years]",
@@ -68,7 +68,7 @@ export const subaru: CaseStudy = {
     { value: "1", label: "Shared allocation experience" },
   ],
   summary:
-    "Vehicle allocation at Subaru of New England: a monthly process that moves vehicles from the distributor through six districts to 65 retailers. The work was less about modernizing an old interface than untangling a workflow spread across roles, legacy systems, spreadsheets and handoffs.",
+    "Vehicle allocation at Subaru of New England: a monthly process that moves vehicles from the distributor through six districts to 65 retailers. The work focused on transforming a complex vehicle allocation process into a connected experience across Sales Operations, six districts, and 65 retailers, rather than just modernizing an old interface.",
   keywords: [
     "subaru",
     "allocation",
