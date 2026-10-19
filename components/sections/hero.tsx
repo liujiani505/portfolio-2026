@@ -33,7 +33,7 @@ export function Hero() {
           initial={reduce ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: ease.out, delay: 0.45 }}
-          className="col-span-12 mt-8 max-w-[44ch] md:col-span-8 md:col-start-5"
+          className="col-span-12 mt-8 max-w-[68ch] md:col-span-8 md:col-start-5"
         >
           <p className="text-balance text-lede text-muted">
             Principal Product Designer connecting strategy, craft, and emerging technology to shape product direction, simplify complex systems, and turn ideas into experiences that work.
